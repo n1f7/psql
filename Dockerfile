@@ -1,13 +1,11 @@
 FROM gentoo/stage3:amd64-nomultilib-openrc AS build
 WORKDIR /etc/portage/repos.conf/
 RUN cp /usr/share/portage/config/repos.conf /etc/portage/repos.conf/gentoo.conf && emerge --sync
-COPY make.conf /etc/portage/make.conf
 WORKDIR /
-ARG CXXFLAGS="-march=native -O3 -pipe -fomit-frame-pointer -fno-stack-protector"
-ARG CFLAGS=${CXXFLAGS}
+VOLUME /etc/portage/make.conf
 RUN emerge -v1 portage
 RUN emerge --with-bdeps=y --root /psql/ -v bash
-RUN USE="-ldap -llvm -lz4 -perl  -selinux nls -ssl -tcl threads -uuid -xml -zstd -zlib -server" emerge --with-bdeps=y --root /psql/ -v postgresql | tee /tmp/build.log
+RUN USE="-ldap -llvm -lz4 -perl  -selinux nls -ssl -tcl threads -uuid -xml -zstd -zlib -server" emerge --with-bdeps=y --root /psql/ -v postgresql
 FROM scratch
 COPY --from=build /psql/usr/lib64/postgresql* /usr/lib64/
 COPY --from=build /psql/usr/share/locale/uk/ /usr/share/locale/
