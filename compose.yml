@@ -2,10 +2,9 @@ name: psql
 services:
   console:
     image: n1f7/psql-gentoo:latest
-    volumes:
-      - ./make.conf:/etc/portage/make.conf
     stdin_open: true
     tty: true
     build:
-      context: .
+      context: config/surface
+      dockerfile: ../../Dockerfile
     restart: "no"
