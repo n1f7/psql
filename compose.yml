@@ -1,10 +1,10 @@
 name: psql
 services:
   console:
-    image: n1f7/psql-gentoo:latest
+    image: n1f7/psql:amd64-surface
     stdin_open: true
     tty: true
     build:
-      context: config/desktop
+      context: config/surface
       dockerfile: ../../Dockerfile
     restart: "no"
