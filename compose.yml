@@ -1,7 +1,9 @@
-name: psql
+name: postgres
 services:
-  console:
+  psql:
     image: n1f7/psql:amd64-surface
+    volumes:
+      - .\psql_history:/root/.psql_history
     stdin_open: true
     tty: true
     build:
