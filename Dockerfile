@@ -1,7 +1,7 @@
 FROM gentoo/stage3:amd64-nomultilib-openrc AS build
 RUN mkdir /etc/portage/repos.conf && cp /usr/share/portage/config/repos.conf /etc/portage/repos.conf/gentoo.conf && emerge --sync
 COPY make.conf /etc/portage/make.conf
-RUN USE="-doc -ldap -llvm -lz4 -perl -selinux nls -ssl -tcl threads -uuid -xml -zstd -zlib -server" emerge -vN glibc ncurses sys-libs/readline postgresql
+RUN USE="-doc -ldap -llvm -lz4 -perl -selinux nls -ssl -tcl threads -uuid -xml -zstd -zlib -server" emerge -vN ncurses sys-libs/readline postgresql
 FROM scratch
 COPY --from=build /usr/lib64/postgresql-14/lib64/libpq.so.5		/usr/lib64/postgresql-14/lib64/
 COPY --from=build /usr/lib64/postgresql-14/bin/psql			/usr/lib64/postgresql-14/bin/
