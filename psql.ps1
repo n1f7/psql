@@ -1,1 +1,1 @@
-docker run --rm -it n1f7/psql-gentoo
+docker compose run --rm psql
