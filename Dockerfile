@@ -5,14 +5,14 @@ RUN touch /root/.psql_history && USE="minimal -doc -ldap -llvm -lz4 -perl -selin
 FROM scratch
 COPY --from=build /etc/inputrc						/etc/
 COPY --from=build /etc/ld.so.cache					/etc/
-COPY --from=build /etc/postgresql-14/psqlrc				/etc/postgresql-14/
+COPY --from=build /etc/postgresql-15/psqlrc				/etc/postgresql-15/
 COPY --from=build /lib64/ld-linux-x86-64.so.2				/lib64/
 COPY --from=build /lib64/libreadline.so.8				/lib64/
 COPY --from=build /lib64/libm.so.6					/lib64/
 COPY --from=build /lib64/libc.so.6					/lib64/
 COPY --from=build /lib64/libtinfow.so.6					/lib64/
-COPY --from=build /usr/lib64/postgresql-14/lib64/libpq.so.5		/usr/lib64/postgresql-14/lib64/
-COPY --from=build /usr/lib64/postgresql-14/bin/psql			/usr/lib64/postgresql-14/bin/
+COPY --from=build /usr/lib64/postgresql-15/lib64/libpq.so.5		/usr/lib64/postgresql-15/lib64/
+COPY --from=build /usr/lib64/postgresql-15/bin/psql			/usr/lib64/postgresql-15/bin/
 VOLUME /root/.psql_history
-ENTRYPOINT ["/usr/lib64/postgresql-14/bin/psql"]
+ENTRYPOINT ["/usr/lib64/postgresql-15/bin/psql"]
 CMD ["-h", "nas.nostromo.shemyakin.me", "-p", "5433", "-U", "postgres"]
