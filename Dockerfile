@@ -1,5 +1,5 @@
 FROM gentoo/stage3:amd64-nomultilib-openrc AS build
-RUN mkdir /etc/portage/repos.conf && cp /usr/share/portage/config/repos.conf /etc/portage/repos.conf/gentoo.conf && emerge-webrsync && emaint sync -a
+RUN mkdir /etc/portage/repos.conf && cp /usr/share/portage/config/repos.conf /etc/portage/repos.conf/gentoo.conf && emerge --sync && emerge -1v portage
 COPY make.conf /etc/portage/make.conf
 RUN touch /root/.psql_history && USE="minimal -doc -ldap -llvm -lz4 -perl -selinux nls -ssl -tcl threads -uuid -xml -zstd -zlib -server" emerge -vN sys-libs/readline ncurses postgresql
 FROM scratch
