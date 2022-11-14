@@ -1,8 +1,9 @@
 FROM gentoo/stage3:amd64-nomultilib-openrc AS build
 RUN mkdir /etc/portage/repos.conf && cp /usr/share/portage/config/repos.conf /etc/portage/repos.conf/gentoo.conf && emerge --sync && emerge -1v portage
 COPY make.conf /etc/portage/make.conf
-RUN touch /root/.psql_history && USE="minimal -doc -ldap -llvm -lz4 -perl -selinux nls -ssl -tcl threads -uuid -xml -zstd -zlib -server" emerge -vN sys-libs/readline ncurses postgresql
-RUN emerge -v strace
+RUN USE="minimal -doc -ldap -llvm -lz4 -perl -selinux nls -ssl -tcl threads -uuid -xml -zstd -zlib -server" emerge -vN sys-libs/readline ncurses postgresql strace
+RUN touch /root/.psql_history && echo en_GB.UTF-8 UTF-8 > /etc/locale.gen && locale-gen && eselect locale set en_GB.utf8
+
 FROM scratch AS app
 COPY --from=build /etc/inputrc									/etc/
 COPY --from=build /etc/ld.so.cache								/etc/
@@ -14,14 +15,25 @@ COPY --from=build /lib64/libc.so.6								/lib64/
 COPY --from=build /lib64/libtinfow.so.6							/lib64/
 COPY --from=build /usr/lib64/postgresql-15/lib64/libpq.so.5		/usr/lib64/postgresql-15/lib64/
 COPY --from=build /usr/lib64/postgresql-15/bin/psql				/usr/lib64/postgresql-15/bin/
+COPY --from=build /usr/lib/locale/locale-archive				/usr/lib/locale/
+ENV LANG=en_GB.utf8
 VOLUME /root/.psql_history
 ENTRYPOINT ["/usr/lib64/postgresql-15/bin/psql"]
 CMD ["-h", "nas.nostromo.shemyakin.me", "-p", "5433", "-U", "postgres"]
+
 FROM app AS dev
-COPY --from=build /bin/bash										/bin/bash
-COPY --from=build /lib64/libtinfo.so.6							/lib64/
-COPY --from=build /etc/bash/bashrc								/etc/bash/bashrc
+COPY --from=build /bin/bash										/bin/
+COPY --from=build /bin/ls 										/bin/
+COPY --from=build /bin/cat										/bin/
 COPY --from=build /usr/bin/strace								/usr/bin/
-COPY --from=build /bin/ls 										/bin/ls
-COPY --from=build /bin/cat										/bin/cat
-ENTRYPOINT ["/bin/bash"]
+COPY --from=build /usr/bin/env									/usr/bin/
+COPY --from=build /usr/bin/locale								/usr/bin/
+COPY --from=build /usr/bin/file									/usr/bin/
+COPY --from=build /lib64/libtinfo.so.6							/lib64/
+COPY --from=build /etc/bash/bashrc								/etc/bash/
+COPY --from=build /usr/share/locale							/usr/share/locale/
+COPY --from=build /etc/terminfo								/etc/terminfo/
+COPY --from=build /usr/share/terminfo							/usr/share/terminfo/
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/bin
+ENV TERM=xterm-256color
+ENTRYPOINT [ "/bin/bash" ]
