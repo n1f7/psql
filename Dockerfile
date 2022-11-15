@@ -1,8 +1,8 @@
 FROM gentoo/stage3:amd64-nomultilib-openrc AS build
-RUN mkdir /etc/portage/repos.conf && cp /usr/share/portage/config/repos.conf /etc/portage/repos.conf/gentoo.conf && emerge --sync && emerge -1v portage
 COPY make.conf /etc/portage/make.conf
-RUN USE="minimal -doc -ldap -llvm -lz4 -perl -selinux nls -ssl -tcl threads -uuid -xml -zstd -zlib -server" emerge -vN sys-libs/readline ncurses postgresql strace
+RUN mkdir /etc/portage/repos.conf && cp /usr/share/portage/config/repos.conf /etc/portage/repos.conf/gentoo.conf && emerge --sync && emerge -1v portage
 RUN echo en_GB.UTF-8 UTF-8 > /etc/locale.gen && locale-gen && eselect locale set en_GB.utf8
+RUN USE="minimal -doc -ldap -llvm -lz4 -perl -selinux nls -ssl -tcl threads -uuid -xml -zstd -zlib -server" emerge -vN sys-libs/readline ncurses postgresql strace
 
 FROM scratch AS app
 COPY --from=build /etc/inputrc /etc/ld.so.cache																					/etc/
