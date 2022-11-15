@@ -1,12 +1,12 @@
 name: postgres
 services:
   psql:
-    image: n1f7/psql:amd64-surface
+    image: n1f7/psql:amd64
     volumes:
       - .\.psql_history:/root/.psql_history
     stdin_open: true
     tty: true
     build:
       target: app
-      context: config/surface
+      context: config/amd64
       dockerfile: ../../Dockerfile
