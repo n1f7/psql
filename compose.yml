@@ -2,11 +2,15 @@ name: postgres
 services:
   psql:
     image: n1f7/psql:amd64
-    volumes:
-      - .\.psql_history:/root/.psql_history
     stdin_open: true
     tty: true
     build:
       target: app
       context: config/amd64
       dockerfile: ../../Dockerfile
+    configs:
+      - source: psqlrc
+        target: /etc/postgresql-15/psqlrc
+configs:
+  psqlrc:
+    file: ./.psqlrc

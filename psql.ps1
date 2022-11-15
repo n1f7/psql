@@ -1,1 +1,1 @@
-docker compose run --rm psql
+docker start -ai psql
