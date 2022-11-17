@@ -1,5 +1,6 @@
 FROM gentoo/stage3:amd64-nomultilib-openrc AS build
-COPY make.conf /etc/portage/make.conf
+ARG target
+COPY config/${target}/make.conf /etc/portage/make.conf
 RUN mkdir /etc/portage/repos.conf && cp /usr/share/portage/config/repos.conf /etc/portage/repos.conf/gentoo.conf && emerge --sync && emerge -1v portage
 RUN echo en_GB.UTF-8 UTF-8 > /etc/locale.gen && locale-gen && eselect locale set en_GB.utf8
 RUN USE="minimal -doc -ldap -llvm -lz4 -perl -selinux nls -ssl -tcl threads -uuid -xml -zstd -zlib -server" emerge -vN sys-libs/readline ncurses postgresql strace
@@ -11,6 +12,7 @@ COPY --from=build /usr/lib64/postgresql-15/lib64/libpq.so.5																		/us
 COPY --from=build /usr/lib64/postgresql-15/bin/psql																				/usr/lib64/postgresql-15/bin/
 COPY --from=build /usr/lib/locale/locale-archive																				/usr/lib/locale/
 ENV LANG=en_GB.utf8
+VOLUME /root/.psql_history
 ENTRYPOINT ["/usr/lib64/postgresql-15/bin/psql"]
 CMD ["-h", "nas.nostromo.shemyakin.me", "-p", "5433", "-U", "postgres"]
 

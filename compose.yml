@@ -2,12 +2,10 @@ name: postgres
 services:
   psql:
     image: n1f7/psql:amd64
-    stdin_open: true
-    tty: true
     build:
       target: app
-      context: config/amd64
-      dockerfile: ../../Dockerfile
+      args:
+        target: amd64
     configs:
       - source: psqlrc
         target: /etc/postgresql-15/psqlrc
