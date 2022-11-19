@@ -2,6 +2,7 @@ name: postgres
 services:
   psql:
     image: n1f7/psql:amd64
+    network_mode: host
     build:
       target: app
       args:

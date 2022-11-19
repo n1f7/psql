@@ -1,1 +1,1 @@
-docker run --name psql -it n1f7/psql:amd64-surface
+docker run --net=host --name psql -it n1f7/psql:amd64-surface
