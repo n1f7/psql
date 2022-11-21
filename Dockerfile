@@ -1,28 +1,11 @@
-FROM gentoo/stage3:amd64-nomultilib-openrc AS build
-ARG target
-COPY config/${target}/make.conf /etc/portage/make.conf
-RUN mkdir /etc/portage/repos.conf && cp /usr/share/portage/config/repos.conf /etc/portage/repos.conf/gentoo.conf && emerge --sync && emerge -1v portage
-RUN echo en_GB.UTF-8 UTF-8 > /etc/locale.gen && locale-gen && eselect locale set en_GB.utf8
-RUN USE="minimal -doc -ldap -llvm -lz4 -perl -selinux nls -ssl -tcl threads -uuid -xml -zstd -zlib -server" emerge -vN sys-libs/readline ncurses postgresql strace
-
 FROM scratch AS app
-COPY --from=build /etc/inputrc /etc/ld.so.cache																					/etc/
-COPY --from=build /lib64/ld-linux-x86-64.so.2 /lib64/libreadline.so.8 /lib64/libm.so.6 /lib64/libc.so.6	/lib64/libtinfow.so.6	/lib64/
-COPY --from=build /usr/lib64/postgresql-15/lib64/libpq.so.5																		/usr/lib64/postgresql-15/lib64/
-COPY --from=build /usr/lib64/postgresql-15/bin/psql																				/usr/lib64/postgresql-15/bin/
-COPY --from=build /usr/lib/locale/locale-archive																				/usr/lib/locale/
+COPY --from=postgres:latest /etc/inputrc /etc/ld.so.cache																																																																																																																																																																																																/etc/
+COPY --from=postgres:latest /lib64/ld-linux-x86-64.so.2																																																																																																																																																																																																/lib64/
+COPY --from=postgres:latest /usr/lib/x86_64-linux-gnu/libpq.so.5 /usr/lib/x86_64-linux-gnu/libssl.so.1.1 /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 /usr/lib/x86_64-linux-gnu/libgssapi_krb5.so.2 /usr/lib/x86_64-linux-gnu/libldap_r-2.4.so.2 /usr/lib/x86_64-linux-gnu/libkrb5.so.3 /usr/lib/x86_64-linux-gnu/libk5crypto.so.3 /usr/lib/x86_64-linux-gnu/libkrb5support.so.0 /usr/lib/x86_64-linux-gnu/liblber-2.4.so.2 /usr/lib/x86_64-linux-gnu/libsasl2.so.2 /usr/lib/x86_64-linux-gnu/libgnutls.so.30 /usr/lib/x86_64-linux-gnu/libp11-kit.so.0 /usr/lib/x86_64-linux-gnu/libidn2.so.0 /usr/lib/x86_64-linux-gnu/libunistring.so.2 /usr/lib/x86_64-linux-gnu/libtasn1.so.6 /usr/lib/x86_64-linux-gnu/libnettle.so.8 /usr/lib/x86_64-linux-gnu/libhogweed.so.6 /usr/lib/x86_64-linux-gnu/libgmp.so.10 /usr/lib/x86_64-linux-gnu/libffi.so.7		/usr/lib/x86_64-linux-gnu/
+COPY --from=postgres:latest /usr/lib/postgresql/15/bin/psql																																																																																																																																																																																															/usr/lib/postgresql-15/bin/
+COPY --from=postgres:latest /lib/x86_64-linux-gnu/libreadline.so.8 /lib/x86_64-linux-gnu/libpthread.so.0 /lib/x86_64-linux-gnu/libm.so.6 /lib/x86_64-linux-gnu/libc.so.6 /lib/x86_64-linux-gnu/libtinfo.so.6 /lib/x86_64-linux-gnu/libdl.so.2 /lib/x86_64-linux-gnu/libcom_err.so.2 /lib/x86_64-linux-gnu/libresolv.so.2 /lib/x86_64-linux-gnu/libkeyutils.so.1																																																																																																																						/lib/x86_64-linux-gnu/
+COPY --from=postgres:latest /usr/lib/locale/locale-archive																																																																																																																																																																																															/usr/lib/locale/
 ENV LANG=en_GB.utf8
 VOLUME /root/.psql_history
-ENTRYPOINT ["/usr/lib64/postgresql-15/bin/psql"]
+ENTRYPOINT ["/usr/lib/postgresql-15/bin/psql"]
 CMD ["-h", "nas.nostromo.shemyakin.me", "-p", "5433", "-U", "postgres"]
-
-FROM app AS dev
-COPY --from=build /bin/bash /bin/ls /bin/cat									/bin/
-COPY --from=build /usr/bin/strace /usr/bin/env /usr/bin/locale /usr/bin/file	/usr/bin/
-COPY --from=build /lib64/libtinfo.so.6											/lib64/
-COPY --from=build /etc/bash/bashrc												/etc/bash/
-COPY --from=build /usr/share/locale												/usr/share/locale/
-COPY --from=build /etc/terminfo													/etc/terminfo/
-COPY --from=build /usr/share/terminfo											/usr/share/terminfo/
-ENV TERM=xterm-256color
-ENTRYPOINT [ "/bin/bash" ]
