@@ -1,0 +1,1 @@
+docker image build --squash --build-arg target=desktop --target app -t n1f7/psql:amd64-desktop .
