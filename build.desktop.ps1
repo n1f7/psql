@@ -1,1 +1,1 @@
-docker image build --squash --build-arg target=desktop --target app -t n1f7/psql:amd64-desktop .
+docker image build --build-arg target=desktop --target squashed -t n1f7/psql:amd64-desktop .

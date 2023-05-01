@@ -1,1 +1,1 @@
-docker image build --squash --build-arg target=surface --target app -t n1f7/psql:amd64-surface .
+docker image build --build-arg target=surface --target squashed -t n1f7/psql:amd64-surface .
